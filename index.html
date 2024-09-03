@@ -25,7 +25,7 @@
     <script>
         const canvas = document.getElementById('sandbox');
         const ctx = canvas.getContext('2d');
-        const particles = [];
+        let particles = [];
 
         canvas.addEventListener('click', (e) => {
             const x = e.clientX - canvas.offsetLeft;
@@ -34,26 +34,22 @@
         });
 
         function getRandomColor() {
-            const letters = '0123456789ABCDEF';
-            let color = '#';
-            for (let i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
+            return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((particle, index) => {
+            particles.forEach((particle) => {
                 ctx.fillStyle = particle.color;
                 ctx.beginPath();
                 ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                 ctx.fill();
-                particle.size -= 0.1;
-                if (particle.size <= 0) {
-                    particles.splice(index, 1);
-                }
+                particle.size -= 0.1; // Уменьшаем размер
             });
+
+            // Удаляем частицы, которые стали слишком маленькими
+            particles = particles.filter(particle => particle.size > 0);
+
             requestAnimationFrame(draw);
         }
 

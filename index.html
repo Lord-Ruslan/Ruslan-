@@ -30,7 +30,7 @@
         canvas.addEventListener('click', (e) => {
             const x = e.clientX - canvas.offsetLeft;
             const y = e.clientY - canvas.offsetTop;
-            particles.push({ x: x, y: y, size: 10, color: getRandomColor() });
+            particles.push({ x: x, y: y, size: 1, maxSize: 20, color: getRandomColor(), growthRate: 0.5 });
         });
 
         function getRandomColor() {
@@ -41,14 +41,15 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach((particle) => {
                 ctx.fillStyle = particle.color;
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                ctx.fill();
-                particle.size -= 0.1; // Уменьшаем размер
+                ctx.fillRect(particle.x - particle.size / 2, particle.y - particle.size / 2, particle.size, particle.size);
+                particle.size += particle.growthRate;
+                if (particle.size > particle.maxSize) {
+                    particle.size = particle.maxSize;
+                }
             });
 
-            // Удаляем частицы, которые стали слишком маленькими
-            particles = particles.filter(particle => particle.size > 0);
+            // Удаляем частицы, которые стали слишком большими и начали исчезать
+            particles = particles.filter(particle => particle.size < particle.maxSize);
 
             requestAnimationFrame(draw);
         }
